@@ -1,64 +1,84 @@
+"use client";
 import Image from "next/image";
+import about from "./assets/about-placeholder.webp";
+import skills from "./assets/skills.webp";
+import Window from "./components/Window";
+import { useWindowManager } from "./hooks/useWindowManager";
+import {AnimatePresence, motion} from "motion/react";
+import Wave from "react-wavify";
 
 export default function Home() {
+
+  const {windows, moveWindow, focusWindow, openWindow, closeWindow} = useWindowManager([
+    {
+      id:"about",
+      title: "About me",
+      x: 100,
+      y: 100,
+      zIndex: 1,
+      isOpen: false,
+      content: <div>About me content</div>
+    },
+    {
+      id:"skills",
+      title: "Skills",
+      x: 300,
+      y: 200,
+      zIndex: 2,
+      isOpen: false,
+      content: <div>Skills content</div>
+    }
+  ]);
+
+
+  const toggleTheme = () => {
+    document.documentElement.classList.toggle("dark");
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <div className="flex flex-col flex-1 items-center justify-center font-sans min-h-screen bg-orange-100 dark:bg-black text-black dark:text-white" >
+      <Wave fill="#1776c9" paused={false} options={{height: 20, amplitude: 20, speed: 0.15, points: 3}} className="absolute bottom-0 w-full z-0" />
+      <AnimatePresence>
+          {windows.filter(window => window.isOpen).map(window => (
+            <motion.div
+              key={window.id}
+                initial={{ opacity: 0}}
+                animate={{ opacity: 1}}
+                exit={{ opacity: 0}}
+                transition={{ duration: 0.2 }}
+                >
+            <Window
+              key={window.id}
+              title={window.title}
+              x={window.x}
+              y={window.y}
+              zIndex={window.zIndex}
+              onMove={(x, y) => moveWindow(window.id, x, y)}
+              onFocus={() => focusWindow(window.id)}
+              onClose={() => closeWindow(window.id)}
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+              {window.content}
+            </Window>
+            </motion.div>
+          ))}
+          </AnimatePresence>
+      <main className="main-container flex flex-col items-center justify-center gap-4 border rounded-lg p-4 w-full min-h-screen z-1 sm:shrink-1" >
+          <div className="flex-1 flex flex-col items-center justify-center gap-4">
+            <h1>WELCOME</h1>
+            <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 " onClick={toggleTheme} >
+              Toggle theme
+            </button>
+          </div>
+          <div className="task-container flex flex-row  items-center justify-between gap-4 border bg-orange-200 dark:bg-gray-700 rounded-4xl p-4 sm:shrink-1">
+            <div className="task-card flex flex-col items-center justify-center sm:shrink-1" onClick={() => openWindow("about")}>
+              <Image src={about} alt="About" className="w-14 h-14 rounded-full hover:scale-110 transition-transform" />
+              <p>About me</p>
+            </div>
+            <div className="task-card flex flex-col items-center justify-center gap-4 sm:shrink-1" onClick={() => openWindow("skills")}>
+              <Image src={skills} alt="Skills" className="w-14 h-14 rounded-full hover:scale-110 transition-transform" />
+              <p>Skills</p>
+            </div>
+          </div>
       </main>
     </div>
   );
