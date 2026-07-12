@@ -4,9 +4,10 @@ type UseDragProps = {
     x: number;
     y: number;
     onMove: (x:number, y:number) => void;
+    windowRef: React.RefObject<HTMLDivElement | null>;
 }
 
-export function useDrag({x, y, onMove}: UseDragProps){
+export function useDrag({x, y, onMove, windowRef}: UseDragProps){
     const dragging = useRef(false);
     const startMouse = useRef({x: 0, y: 0});
     const startWindow = useRef({x: 0, y: 0});
@@ -34,7 +35,21 @@ export function useDrag({x, y, onMove}: UseDragProps){
                 const dx = e.clientX - startMouse.current.x;
                 const dy = e.clientY - startMouse.current.y;
 
-                onMove(startWindow.current.x + dx, startWindow.current.y + dy);
+                let newX = startWindow.current.x + dx;
+                let newY = startWindow.current.y + dy;
+
+                // Ensure the window stays within the viewport
+                const rect = windowRef.current?.getBoundingClientRect();
+
+                if(!rect) return;
+
+                const maxX = window.innerWidth - rect.width;
+                const maxY = window.innerHeight - rect.height;
+
+                newX = Math.max(0, Math.min(newX, maxX));
+                newY = Math.max(0, Math.min(newY, maxY));
+
+                onMove(newX, newY);
     }
 
     const stopDragging = () => {
