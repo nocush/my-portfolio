@@ -14,8 +14,8 @@ export default function Home() {
     {
       id:"about",
       title: "About me",
-      x: 10,
-      y: 10,
+      x: 0,
+      y: 0,
       zIndex: 4,
       isOpen: false,
       content: <div>About me content</div>
@@ -23,8 +23,8 @@ export default function Home() {
     {
       id:"skills",
       title: "Skills",
-      x: 30,
-      y: 20,
+      x: 0,
+      y: 0,
       zIndex: 5,
       isOpen: false,
       content: <div>Skills content</div>

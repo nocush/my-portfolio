@@ -43,8 +43,8 @@ export function useDrag({x, y, onMove, windowRef}: UseDragProps){
 
                 if(!rect) return;
 
-                const maxX = window.innerWidth - rect.width;
-                const maxY = window.innerHeight - rect.height;
+                const maxX = Math.max(0, window.innerWidth - rect.width);
+                const maxY = Math.max(0, window.innerHeight - rect.height);
 
                 newX = Math.max(0, Math.min(newX, maxX));
                 newY = Math.max(0, Math.min(newY, maxY));
